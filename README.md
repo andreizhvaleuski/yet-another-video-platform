@@ -1,1 +1,1 @@
-# yet-another-video-platform
+# YAVP
