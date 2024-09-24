@@ -1,9 +1,23 @@
-﻿namespace YAVP.Contracts
+﻿using MessagePack;
+
+namespace YAVP.Contracts
 {
+    [MessagePackObject]
     public sealed class VideoUploaded
     {
-        public Guid VideoId { get; set; }
+        [SerializationConstructor]
+        public VideoUploaded(Guid videoId, string fileLocation)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(fileLocation, nameof(fileLocation));
 
-        public string FileLocation { get; set; }
+            VideoId = videoId;
+            FileLocation = fileLocation;
+        }
+
+        [Key(0)]
+        public Guid VideoId { get; }
+
+        [Key(1)]
+        public string FileLocation { get; }
     }
 }
