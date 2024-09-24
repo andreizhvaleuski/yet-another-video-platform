@@ -67,7 +67,9 @@ namespace YAVP.Workers.VideoProcessing
                 .AddArgument("-seg_duration").AddArgument("10")
                 .AddArgument("-adaptation_sets").AddArgument("id=0,streams=v id=1,streams=a")
                 .AddArgument("-f").AddArgument("dash")
-                .AddArgument(Path.Combine(@"D:\YAVP\Videos", videoId.ToString(), "360p", "dash.mpd"));
+                .AddArgument(Path.Combine(@"D:\YAVP\Videos", "360p", videoId.ToString(), "dash.mpd"));
+
+            Directory.CreateDirectory(Path.Combine(@"D:\YAVP\Videos", "360p", videoId.ToString()));
 
             var dict = new Dictionary<string, string?>();
 
@@ -83,7 +85,7 @@ namespace YAVP.Workers.VideoProcessing
 
             void ProcessOutputDataReceived(object sender, DataReceivedEventArgs e)
             {
-                var d = e.Data?.Split('-', StringSplitOptions.TrimEntries);
+                var d = e.Data?.Split('=', StringSplitOptions.TrimEntries);
                 var key = d?[0];
                 var value = d?[1];
 
@@ -116,13 +118,11 @@ namespace YAVP.Workers.VideoProcessing
 
 
         [LoggerMessage(
-            EventId = 0,
             Level = LogLevel.Error,
             Message = "Error occured during process execution: {Message}")]
         public partial void ErrorOccuredDuringExecution(string message);
 
         [LoggerMessage(
-            EventId = 0,
             Level = LogLevel.Error,
             Message = "Error occured during process execution")]
         public partial void ErrorOccuredDuringExecution();

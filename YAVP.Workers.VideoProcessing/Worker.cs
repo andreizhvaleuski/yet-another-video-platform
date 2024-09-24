@@ -23,11 +23,13 @@ namespace YAVP.Workers.VideoProcessing
             {
                 BootstrapServers = "localhost:33101,localhost:33102,localhost:33103",
                 GroupId = "360p-Video-Processors",
-                AutoOffsetReset = AutoOffsetReset.Latest,
+                AutoOffsetReset = AutoOffsetReset.Earliest,
                 EnableAutoCommit = false,
+                HeartbeatIntervalMs = 1000,
+                MaxPollIntervalMs = 10_000_00
             };
 
-            using (var consumer = new ConsumerBuilder<string, VideoUploaded>(config)
+            using (var consumer = new ConsumerBuilder<Null, VideoUploaded>(config)
                 .SetValueDeserializer(new KafkaMessagePackDeserializer<VideoUploaded>())
                 .SetLogHandler((consumer, log) =>
                 {
