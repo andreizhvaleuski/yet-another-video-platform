@@ -1,9 +1,9 @@
 ﻿using Confluent.Kafka;
 using MessagePack;
 
-namespace YAVP.Workers.VideoProcessing;
+namespace YAVP.Contracts.Kafka;
 
-public class KafkaMessagePackDeserializer<T> : IDeserializer<T> where T : class
+public sealed class KafkaMessagePackDeserializer<T> : IDeserializer<T> where T : class
 {
     public T Deserialize(ReadOnlySpan<byte> data, bool isNull, SerializationContext context)
     {

@@ -7,14 +7,17 @@ namespace YAVP.Workers.VideoProcessing
     {
         private readonly ILogger<Worker> _logger;
         private readonly IVideoProcessor _videoProcessor;
+        private readonly IDeserializer<VideoUploaded> _videoUploadedDeserializer;
 
-        public Worker(ILogger<Worker> logger, IVideoProcessor videoProcessor)
+        public Worker(ILogger<Worker> logger, IVideoProcessor videoProcessor, IDeserializer<VideoUploaded> videoUploadedDeserializer)
         {
             ArgumentNullException.ThrowIfNull(logger, nameof(logger));
             ArgumentNullException.ThrowIfNull(videoProcessor, nameof(videoProcessor));
+            ArgumentNullException.ThrowIfNull(videoUploadedDeserializer, nameof(videoUploadedDeserializer));
 
             _logger = logger;
             _videoProcessor = videoProcessor;
+            _videoUploadedDeserializer = videoUploadedDeserializer;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,7 +33,7 @@ namespace YAVP.Workers.VideoProcessing
             };
 
             using (var consumer = new ConsumerBuilder<Null, VideoUploaded>(config)
-                .SetValueDeserializer(new KafkaMessagePackDeserializer<VideoUploaded>())
+                .SetValueDeserializer(_videoUploadedDeserializer)
                 .SetLogHandler((consumer, log) =>
                 {
                     _logger.Log(
@@ -60,7 +63,8 @@ namespace YAVP.Workers.VideoProcessing
 
                         await _videoProcessor.ProcessAsync(
                             videoUploaded.VideoId,
-                            videoUploaded.FileLocation);
+                            videoUploaded.FileLocation,
+                            stoppingToken);
 
                         consumer.Commit();
                     }
