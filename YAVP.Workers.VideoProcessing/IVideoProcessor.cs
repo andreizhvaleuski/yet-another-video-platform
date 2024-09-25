@@ -67,9 +67,11 @@ namespace YAVP.Workers.VideoProcessing
                 .AddArgument("-seg_duration").AddArgument("10")
                 .AddArgument("-adaptation_sets").AddArgument("id=0,streams=v id=1,streams=a")
                 .AddArgument("-f").AddArgument("dash")
-                .AddArgument(Path.Combine(@"D:\YAVP\Videos", "360p", videoId.ToString(), "dash.mpd"));
+                .AddArgument("dash.mpd");
 
-            Directory.CreateDirectory(Path.Combine(@"D:\YAVP\Videos", "360p", videoId.ToString()));
+            var workingDirectory = Path.Combine(@"D:\YAVP\Videos", "360p", videoId.ToString());
+            Directory.CreateDirectory(workingDirectory);
+            process.StartInfo.WorkingDirectory = workingDirectory;
 
             var dict = new Dictionary<string, string?>();
 
@@ -79,7 +81,6 @@ namespace YAVP.Workers.VideoProcessing
             process.Start();
             process.BeginOutputReadLine();
             process.BeginErrorReadLine();
-
 
             await process.WaitForExitAsync(stoppingToken);
 
@@ -108,12 +109,10 @@ namespace YAVP.Workers.VideoProcessing
         {
             if (e.Data is null)
             {
-                ErrorOccuredDuringExecution();
+                return;
             }
-            else
-            {
-                ErrorOccuredDuringExecution(e.Data);
-            }
+
+            ErrorOccuredDuringExecution(e.Data);
         }
 
 
